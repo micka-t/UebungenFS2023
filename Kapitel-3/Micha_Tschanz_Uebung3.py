@@ -20,7 +20,7 @@ class Punkt(Figur):
         self.y = y
 
     def __str__(self):
-        return f"Punkt ({self.x},{self.y})"
+        return f"Punkt: ({self.x},{self.y})"
 
 class Kreis(Figur):
     def __init__(self, mittelpunkt, radius):
@@ -107,7 +107,7 @@ class Polygon(Figur):
             f = f + ((punkt1.x) * (punkt2.y-punkt3.y))
         return f/2    
     def __str__(self):
-        return f"Polygon: ({self.p})"  
+        return f"Polygon: Anzahl Punkte = {(len(self.p))}"  
 
 
 
@@ -120,9 +120,9 @@ D= Punkt(7,9)
 K= Punkt(0,0)
 P= Polygon(A,B,C)
 F= Dreieck(A,B,C)
-print(P)
+print(A)
 print(P.umfang())
-print(F)
+print(P)
 print(F.umfang())
 print(F.flaeche())
 print(P.flaeche())
