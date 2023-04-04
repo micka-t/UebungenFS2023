@@ -21,6 +21,9 @@ class Punkt(Figur):
 
     def __str__(self):
         return f"Punkt: ({self.x},{self.y})"
+    
+    def distanz(self,other):
+        return math.sqrt((self.x - other.x)**2 + (self.y-other.y)**2) 
 
 class Kreis(Figur):
     def __init__(self, mittelpunkt, radius):
@@ -45,10 +48,7 @@ class Dreieck(Figur):
         self.c = c
 
     def umfang(self):
-        ab = math.sqrt((self.b.x - self.a.x)**2 + (self.b.y-self.a.y)**2)    
-        bc = math.sqrt((self.c.x - self.b.x)**2 + (self.c.y-self.b.y)**2)    
-        ca = math.sqrt((self.a.x - self.c.x)**2 + (self.a.y-self.c.y)**2)    
-        return ab + bc + ca
+        return self.a.distanz(self.b) + self.b.distanz(self.c) + self.c.distanz(self.a)
     
     def flaeche(self):
         f = abs(((self.b.x-self.a.x)*(self.c.y-self.a.y))-((self.c.x-self.a.x)*(self.b.y-self.a.y)))
@@ -121,7 +121,7 @@ K= Punkt(0,0)
 P= Polygon(A,B,C)
 F= Dreieck(A,B,C)
 print(A)
-print(P.umfang())
+print(F.umfang())
 print(P)
 print(F.umfang())
 print(F.flaeche())
