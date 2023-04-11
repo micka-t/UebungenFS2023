@@ -1,0 +1,127 @@
+import sys
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+import urllib.parse
+import datetime
+
+
+class MyWindow(QMainWindow): 
+    
+    def __init__(self):      # Konstruktor
+        super().__init__()   # Konstruktor Basis-Klasse
+
+
+        self.setMinimumWidth(400)
+        self.setMinimumHeight(500)
+
+        self.setWindowTitle("GUI Programmierung")  # Fenster-Titel setzen
+        self.show()  # Fenster anzeigen/sichtbar machen
+        
+        layout_top = QFormLayout()
+        self.vorname = QLineEdit()
+        self.name = QLineEdit()
+        self.geburtstag = QDateEdit()
+        self.adresse = QLineEdit()
+        self.plz = QLineEdit()
+        self.ort = QLineEdit()
+        self.countries = QComboBox()
+        self.countries.addItems(["Schweiz", "Deutschland", "Österreich"])
+        self.l_map = QPushButton("Auf Karte Anzeigen")
+        self.l_load = QPushButton("Laden")
+        self.l_save = QPushButton("Save")
+
+
+        layout_top.addRow("Vorname:", self.vorname)
+        layout_top.addRow("Name:", self.name)
+        layout_top.addRow("Geburtsdatum:", self.geburtstag)
+        layout_top.addRow("Adresse", self.adresse)
+        layout_top.addRow("Postleizahl", self.plz)
+        layout_top.addRow("Ort:", self.ort)
+        layout_top.addRow("Land:", self.countries)
+        layout_top.addRow(self.l_map)
+        layout_top.addRow(self.l_load)
+        layout_top.addRow(self.l_save)
+
+        self.l_save.clicked.connect(self.do_save)
+        self.l_map.clicked.connect(self.do_map)
+        self.l_load.clicked.connect(self.do_load)
+
+        top = QWidget()
+        top.setLayout(layout_top)
+        self.setCentralWidget(top)
+        self.show()
+
+
+        menubar = self.menuBar()
+        filemenu = menubar.addMenu("File")
+        viewmenu = menubar.addMenu("View")
+
+        fm_load = QAction("Load", self)
+        fm_save = QAction("Save", self)
+        fm_quit = QAction("Quit", self)
+        vm_map = QAction("Show map", self)
+
+        fm_quit.triggered.connect(self.do_quit)
+        fm_save.triggered.connect(self.do_save)
+        fm_load.triggered.connect(self.do_load)
+        vm_map.triggered.connect(self.do_map)
+
+        filemenu.addAction(fm_load)
+        filemenu.addAction(fm_save)
+        filemenu.addAction(fm_quit)
+        viewmenu.addAction(vm_map)
+
+
+
+    def do_save(self):
+        filename_save, filter = QFileDialog.getSaveFileName(self,"Datei speichern", "", "Text (*.txt)")
+
+        file = open(filename_save, "w", encoding = "utf-8")
+        file.write (f"{self.vorname.text()}, {self.name.text()}, {self.geburtstag.text()}, {self.adresse.text()}, {self.plz.text()}, {self.ort.text()}, {self.countries.currentText()}")
+        file.close()
+
+    def do_quit(self):
+        self.close()
+
+    def do_load(self):
+        filename_load, filter = QFileDialog.getOpenFileName(self, "Datei öffnen", "", "Text (*.txt)")
+        file = open(filename_load, "r", encoding = "utf-8")
+        data = file.read ()
+        vorname, name, geburtstag, adresse, plz, ort, countries = data.split(", ")
+        self.vorname.setText(vorname)
+        self.name.setText(name)
+        geburtstag_split = geburtstag.split(".")
+        d = int(geburtstag_split[0])
+        m = int(geburtstag_split[1])
+        y = int(geburtstag_split[2])
+        date = datetime.date(y,m,d)
+        self.geburtstag.setDate(date)
+        self.adresse.setText(adresse)
+        self.plz.setText(plz)
+        self.ort.setText(ort)
+        self.countries.setCurrentText(countries)
+
+        file.close()
+
+    def do_map(self):
+        af = self.adresse.text()
+        adef = urllib.parse.quote(af)
+
+        ortf = self.ort.text()
+        ortdef = urllib.parse.quote(ortf)
+
+        countriesf = self.countries.currentText()
+        countriesdef = urllib.parse.quote(countriesf)
+
+        link = f"https://www.google.ch/maps/place/{adef}+{self.plz.text()}+{ortdef}+{countriesdef}"
+        QDesktopServices.openUrl(QUrl(link))
+
+def main():
+    app = QApplication(sys.argv)
+    mainwindow = MyWindow()
+    mainwindow.raise_()
+    app.exec_()
+
+if __name__ == '__main__':
+    main()
